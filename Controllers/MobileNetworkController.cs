@@ -12,6 +12,6 @@ namespace MobileNetwork.NET.Controllers
         public static void Test()
         {
 
-        }
     }
+}
 }
