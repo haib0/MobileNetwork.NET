@@ -71,7 +71,7 @@ namespace MobileNetwork.NET.MobileNetwork
         {
             var fd = Tools.DoplerFrequency(UE.Config.Position.Velocity, BS.Frequency);
             //Console.WriteLine($"fd={fd}");
-            var correlation = SpecialFunctions.BesselJ(0, 2 * Math.PI * fd * UE.Config.UpdateInterval);
+            var correlation = SpecialFunctions.BesselJ(0, 2 * Math.PI * fd * UE.Config.Position.UpdateInterval);
             //Console.WriteLine($"correlation={correlation}");
             var delta = Normal.Sample(0, 1);
             //Console.WriteLine($"delta={delta}");

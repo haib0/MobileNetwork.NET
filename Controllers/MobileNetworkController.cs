@@ -7,11 +7,54 @@ namespace MobileNetwork.NET.Controllers
     [ApiController]
     public class MobileNetworkController : ControllerBase
     {
-        private readonly MobileNetwork.MobileNetwork mobileNetwork = new MobileNetwork.MobileNetwork(100, 300);
+        private static readonly MobileNetwork.MobileNetwork mobileNetwork = new(10, 30);
 
-        public static void Test()
+        [HttpGet("AllStatus")]
+        public MobileNetworkStatus AllStatus() => mobileNetwork.AllStatus();
+
+        [HttpGet("AllBaseStationStatus")]
+        public List<BaseStationStatus> AllBaseStationStatus()
         {
+            return mobileNetwork.AllBaseStationStatus();
+        }
 
+        [HttpGet("BaseStationStatus")]
+        public BaseStationStatus? BaseStationStatus(int id)
+        {
+            return mobileNetwork.BaseStationStatus(id);
+        }
+
+        [HttpGet("AllUserEquipmentStatus")]
+        public List<UserEquipmentStatus> AllUserEquipmentStatus()
+        {
+            return mobileNetwork.AllUserEquipmentStatus();
+        }
+
+        [HttpGet("UserEquipmentStatus")]
+        public UserEquipmentStatus GetUEStatus(int id)
+        {
+            return mobileNetwork.AllUE[id].Status();
+        }
+
+        // todo: more details of false
+        [HttpPut("SetBaseStationTxPower/{bsID}")]
+        public bool SetBaseStationTxPower(int bsID, double txPower)
+        {
+            return mobileNetwork.SetBaseStationTxPower(bsID, txPower);
+
+        }
+
+        [HttpPut("SetBaseStationChannelID/{channelID}")]
+        public bool SetBaseStationChannelID(int bsID, int channelID)
+        {
+            return mobileNetwork.SetBaseStationChannelID(bsID, channelID);
+        }
+
+        [HttpPut("UserConnect")]
+        public bool UserConnect(int ueID, int bsID)
+        {
+            return mobileNetwork.UserConnect(ueID, bsID);            
+        }
     }
 }
-}
+

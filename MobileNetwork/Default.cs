@@ -1,4 +1,6 @@
-﻿namespace MobileNetwork.NET.MobileNetwork
+﻿using Microsoft.VisualBasic;
+
+namespace MobileNetwork.NET.MobileNetwork
 {
     public static class Default
     {
@@ -13,7 +15,8 @@
                 BorderX = BorderX,
                 BorderY = BorderY,
                 BaseStationNum = nBS,
-                UserEquipmentNum = nUE
+                UserEquipmentNum = nUE,
+                ChannelNum = 1
             };
         }
 
@@ -35,6 +38,7 @@
 
         public static UserEquipmentConfig UserEquipmentConfig(int id, string name, double posX, double posY)
         {
+            var updateInterval = 0.02;
             var velocity = 1.5;
             return new UserEquipmentConfig
             {
@@ -43,8 +47,7 @@
                 SNIRThreshold = 0,
                 Noise = -114, //dBm
                 Height = 1.5,
-                Position = new RandomMove(posX, posY, velocity, BorderX, BorderY),
-                UpdateInterval = 0.02,
+                Position = new RandomMove(posX, posY, updateInterval, velocity, BorderX, BorderY),
                 AutoConnect = true,
             }; ;
         }

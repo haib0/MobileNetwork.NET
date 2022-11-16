@@ -11,7 +11,7 @@ namespace MobileNetwork.NET.MobileNetwork
         public double Noise { get; set; } // in dBm
         public double Height { get; set; } // todo: users' height can be a range
         public UserEquipmentPosition Position { get; set; }
-        public double UpdateInterval { get; set; } // in ms
+        public double UpdateInterval { get; set; }
         public bool AutoConnect { get; set; } // if auto connect to bs //TODO: Connection class
     }
 
@@ -25,15 +25,12 @@ namespace MobileNetwork.NET.MobileNetwork
         public double TheDistance => AllDistance[TheBS];  // distance from TheBS
         public IChannelModel TheChannelModel => AllChannelModel[TheBS];
 
-        private System.Timers.Timer? _UETimer;
-
         public UserEquipment(UserEquipmentConfig config, List<BaseStation> baseStations)
         {
             Config = config;
             AllBaseStation = baseStations;
             SetALLChannelModel();
             UpdateAllDistance();
-            SetTimer();
         }
 
         private void SetALLChannelModel()
@@ -44,43 +41,28 @@ namespace MobileNetwork.NET.MobileNetwork
                 AllChannelModel[bs] = new JakesChannelModel(this, bs);
             }
         }
-        private void SetTimer()
-        {
-            _UETimer = new System.Timers.Timer(Config.UpdateInterval * 1e3);
-            _UETimer.Elapsed += OnTimedUpdate;
-            _UETimer.AutoReset = true;
-            _UETimer.Enabled = true;
-        }
 
-        private void OnTimedUpdate(object? source, ElapsedEventArgs e)
+
+        private void Update()
         {
-            // move
-            UpdatePosition();           
-            
+            // update distances from all bs
+            UpdateAllDistance();
             // update connection if set to auto-connect mode
             if (Config.AutoConnect)
             {
                 UpdateConnect();
             }
-
             // update channel status infomation
             UpdateCSI();
 
-            Console.WriteLine($"----------{e.SignalTime}------------");
+            Console.WriteLine($"----------------------");
             Console.WriteLine($"{Config.Name}: x={Config.Position.PositionX}\ty={Config.Position.PositionY}");
             Console.WriteLine($"{TheBS.Config.Name}: x={TheBS.Config.PositionX}\ty={TheBS.Config.PositionY}");
             Console.WriteLine($"Dis={AllDistance[TheBS]}");
             Console.WriteLine($"SpectralEfficiency = {SpectralEfficiency}");
-
-            Console.WriteLine($"----------{e.SignalTime}------------");
+            Console.WriteLine($"----------------------");
         }
 
-        private void UpdatePosition()
-        {
-            Config.Position.Move(Config.UpdateInterval);
-            // update distances from all bs
-            UpdateAllDistance();
-        }
 
 
         private void UpdateAllDistance()
@@ -105,20 +87,16 @@ namespace MobileNetwork.NET.MobileNetwork
         {
             if (!AllBaseStation.Contains(baseStation)) return;
             if (baseStation == TheBS) return;
-            if (TheBS != null)
-            {
-                TheBS.Disconnect(this);
-            }
+            TheBS?.Disconnect(this);
             TheBS = baseStation;
             TheBS.Connect(this);
         }
 
         public Dictionary<BaseStation, double> AllRxPower { get; set; } // in dBm
-
         public double SINR { get; set; }
         public double SpectralEfficiency => Math.Log2(1 + SINR); // bit/s/Hz
         public double DataRate => TheBS.Bandwidth * SpectralEfficiency; // bit/s
-        public void UpdateCSI()
+        private void UpdateCSI()
         {
             AllRxPower = AllChannelModel.ToDictionary(x => x.Key, x => x.Value.BS.TxPower - x.Value.ChannelLoss());
             var rx = AllRxPower.ToDictionary(x => x.Key, x => Tools.FromDB(x.Value)); // dBm to mW         
@@ -133,11 +111,36 @@ namespace MobileNetwork.NET.MobileNetwork
             SINR = s / (i + n);
             //Console.WriteLine($"SINR={SINR}");
         }
+
+        public UserEquipmentStatus Status()
+        {
+            Update();
+            return new UserEquipmentStatus
+            {
+                Config = Config,
+                AllDistance = AllDistance.ToDictionary(x => x.Key.Config.ID, x => x.Value),
+                AllRxPower = AllRxPower.ToDictionary(x => x.Key.Config.ID, x => x.Value),
+                TheBS = TheBS.Config.ID,
+                TheDistance = TheDistance,
+                TheRxPower = AllRxPower[TheBS],
+                SINR = SINR,
+                SpectralEfficiency = SpectralEfficiency,
+                DataRate = DataRate
+            };
+        }
     }
 
     public class UserEquipmentStatus
     {
-        public UserEquipmentConfig Config { get; set; }
-
+        public DateTime Time => DateTime.Now;
+        public UserEquipmentConfig? Config { get; set; }
+        public Dictionary<int, double>? AllDistance { get; set; }
+        public Dictionary<int, double>? AllRxPower { get; set; } // in dBm
+        public int TheBS { get; set; } // the BS that connected.
+        public double TheDistance { get; set; }  // distance from TheBS
+        public double TheRxPower { get; set; }
+        public double SINR { get; set; }
+        public double SpectralEfficiency { get; set; }// bit/s/Hz
+        public double DataRate { get; set; }// bit/s
     }
 }
