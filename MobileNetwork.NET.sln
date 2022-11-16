@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33103.184
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MobileNetwork.NET", "MobileNetwork.NET.csproj", "{855DC1DE-D475-44A6-B578-010960E5B5AA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{855DC1DE-D475-44A6-B578-010960E5B5AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{855DC1DE-D475-44A6-B578-010960E5B5AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{855DC1DE-D475-44A6-B578-010960E5B5AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{855DC1DE-D475-44A6-B578-010960E5B5AA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B5FA295A-B82A-4EC6-A8CE-6D0F89D9DF64}
+	EndGlobalSection
+EndGlobal
