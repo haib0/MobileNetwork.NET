@@ -37,23 +37,40 @@ namespace MobileNetwork.NET.Controllers
         }
 
         // todo: more details of false
-        [HttpPut("SetBaseStationTxPower/{bsID}")]
-        public bool SetBaseStationTxPower(int bsID, double txPower)
+        [HttpPut("SetBaseStationTxPower")]
+        public void SetBaseStationTxPowers(Dictionary<int, double> txPowers)
         {
-            return mobileNetwork.SetBaseStationTxPower(bsID, txPower);
+            mobileNetwork.SetBaseStationTxPowers(txPowers);
+        }
 
+        [HttpPut("SetBaseStationTxPower/{bsID}")]
+        public void SetBaseStationTxPower(int bsID, double txPower)
+        {
+            mobileNetwork.SetBaseStationTxPower(bsID, txPower);
+        }
+
+        [HttpPut("SetBaseStationChannelIDs")]
+        public void SetBaseStationChannelIDs(Dictionary<int, int>channelIDs)
+        {
+            mobileNetwork.SetBaseStationChannelIDs(channelIDs);
         }
 
         [HttpPut("SetBaseStationChannelID/{channelID}")]
-        public bool SetBaseStationChannelID(int bsID, int channelID)
+        public void SetBaseStationChannelID(int bsID, int channelID)
         {
-            return mobileNetwork.SetBaseStationChannelID(bsID, channelID);
+            mobileNetwork.SetBaseStationChannelID(bsID, channelID);
         }
 
-        [HttpPut("UserConnect")]
-        public bool UserConnect(int ueID, int bsID)
+        [HttpPut("SetUserConnects")]
+        public void SetUserConnects(Dictionary<int, int> connects)
         {
-            return mobileNetwork.UserConnect(ueID, bsID);            
+            mobileNetwork.SetUserConnects(connects);
+        }
+
+        [HttpPut("SetUserConnect")]
+        public void SetUserConnect(int ueID, int bsID)
+        {
+            mobileNetwork.SetUserConnect(ueID, bsID);            
         }
     }
 }

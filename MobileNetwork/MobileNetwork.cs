@@ -96,28 +96,41 @@ public class MobileNetwork
     }
 
     // todo: more details of false
-    public bool SetBaseStationTxPower(int bsID, double txPower)
+
+    public void SetBaseStationTxPowers(Dictionary<int, double> txPowers)
     {
-        if (bsID < 0 || bsID >= AllBS.Count) return false;
-        if (txPower < 0 || txPower > AllBS[bsID].Config.MaxTxPower) return false;
+        foreach (var tx in txPowers) SetBaseStationTxPower(tx.Key, tx.Value);        
+    }
+
+    public void SetBaseStationTxPower(int bsID, double txPower)
+    {
+        if (bsID < 0 || bsID >= AllBS.Count) return ;
+        if (txPower < 0 || txPower > AllBS[bsID].Config.MaxTxPower) return ;
         AllBS[bsID].SetTxPower(txPower);
-        return true;
     }
 
-    public bool SetBaseStationChannelID(int bsID, int channelID)
+    public void SetBaseStationChannelIDs(Dictionary<int, int> channelIDs)
     {
-        if (bsID < 0 || bsID >= AllBS.Count) return false;
-        if (channelID < 0 || channelID >= Config.ChannelNum) return false;
+        foreach (var i in channelIDs) { SetBaseStationChannelID(i.Key, i.Value); }
+    }
+
+    public void SetBaseStationChannelID(int bsID, int channelID)
+    {
+        if (bsID < 0 || bsID >= AllBS.Count) return;
+        if (channelID < 0 || channelID >= Config.ChannelNum) return;
         AllBS[bsID].SetChannelID(channelID);
-        return true;
     }
 
-    public bool UserConnect(int ueID, int bsID)
+    public void SetUserConnects(Dictionary<int, int> connections)
     {
-        if (ueID < 0 || ueID >= AllUE.Count) return false;
-        if (bsID < 0 || bsID >= AllBS.Count) return false;
+        foreach (var c in connections) { SetUserConnect(c.Key, c.Value); }
+    }
+
+    public void SetUserConnect(int ueID, int bsID)
+    {
+        if (ueID < 0 || ueID >= AllUE.Count) return ;
+        if (bsID < 0 || bsID >= AllBS.Count) return ;
         AllUE[ueID].ConnectTo(AllBS[bsID]);
-        return true;
     }
 }
 
