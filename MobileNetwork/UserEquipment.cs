@@ -55,12 +55,12 @@ namespace MobileNetwork.NET.MobileNetwork
             // update channel status infomation
             UpdateCSI();
 
-            Console.WriteLine($"----------------------");
-            Console.WriteLine($"{Config.Name}: x={Config.Position.PositionX}\ty={Config.Position.PositionY}");
-            Console.WriteLine($"{TheBS.Config.Name}: x={TheBS.Config.PositionX}\ty={TheBS.Config.PositionY}");
-            Console.WriteLine($"Dis={AllDistance[TheBS]}");
-            Console.WriteLine($"SpectralEfficiency = {SpectralEfficiency}");
-            Console.WriteLine($"----------------------");
+            //Console.WriteLine($"----------------------");
+            //Console.WriteLine($"{Config.Name}: x={Config.Position.PositionX}\ty={Config.Position.PositionY}");
+            //Console.WriteLine($"{TheBS.Config.Name}: x={TheBS.Config.PositionX}\ty={TheBS.Config.PositionY}");
+            //Console.WriteLine($"Dis={AllDistance[TheBS]}");
+            //Console.WriteLine($"SpectralEfficiency = {SpectralEfficiency}");
+            //Console.WriteLine($"----------------------");
         }
 
 

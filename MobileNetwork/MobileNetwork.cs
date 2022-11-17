@@ -49,7 +49,7 @@ public class MobileNetwork
             var posY = rand.NextDouble() * Config.BorderY;
             AllBS.Add(new BaseStation(Default.BaseStationConfig(id, $"BS-{id}", posX, posY)));
         }
-        Console.WriteLine("GenerateAllBS");
+        //Console.WriteLine("GenerateAllBS");
     }
 
     private void GenerateAllUE()
