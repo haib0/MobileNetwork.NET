@@ -16,7 +16,6 @@ namespace MobileNetwork.NET.MobileNetwork
                 BorderY = BorderY,
                 BaseStationNum = nBS,
                 UserEquipmentNum = nUE,
-                ChannelNum = 1
             };
         }
 
@@ -26,10 +25,10 @@ namespace MobileNetwork.NET.MobileNetwork
             {
                 ID = id,
                 Name = name,
-                InitChannelID = 0,
-                MaxTxPower = 30,
-                InitBandwidth = 9e6,
-                InitFrequency = 2.5e9,
+                Frequency = 3.5e9,
+                SubcarrierNum = 16,
+                SubcarrierBandwidth = 1e8,
+                SubcarrierMaxTxPower = 30,                
                 Height = 10,
                 PositionX = posX,
                 PositionY = posY

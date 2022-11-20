@@ -3,6 +3,7 @@ using System.Timers;
 
 namespace MobileNetwork.NET.MobileNetwork
 {
+    
     public class UserEquipmentConfig
     {
         public int ID { get; set; }
@@ -24,7 +25,7 @@ namespace MobileNetwork.NET.MobileNetwork
         public BaseStation TheBS { get; set; } // the BS that connected.
         public double TheDistance => AllDistance[TheBS];  // distance from TheBS
         public IChannelModel TheChannelModel => AllChannelModel[TheBS];
-
+        
         public UserEquipment(UserEquipmentConfig config, List<BaseStation> baseStations)
         {
             Config = config;
@@ -80,6 +81,7 @@ namespace MobileNetwork.NET.MobileNetwork
         private void UpdateConnect()
         {
             var newBS = AllDistance.MinBy(kvp => kvp.Value).Key;
+            if (newBS == null) return;
             ConnectTo(newBS);
         }
 
@@ -95,16 +97,21 @@ namespace MobileNetwork.NET.MobileNetwork
         public Dictionary<BaseStation, double> AllRxPower { get; set; } // in dBm
         public double SINR { get; set; }
         public double SpectralEfficiency => Math.Log2(1 + SINR); // bit/s/Hz
-        public double DataRate => TheBS.Bandwidth * SpectralEfficiency; // bit/s
+        public double DataRate => TheBS.Config.SubcarrierBandwidth * SpectralEfficiency; // bit/s
         private void UpdateCSI()
-        {
-            AllRxPower = AllChannelModel.ToDictionary(x => x.Key, x => x.Value.BS.TxPower - x.Value.ChannelLoss());
+        {   if (!TheBS.ConnectedUserEquipment.ContainsKey(this))
+            {
+                AllRxPower = new Dictionary<BaseStation, double>();
+                SINR = 0;
+                return;
+            }
+
+            var carrier = TheBS.ConnectedUserEquipment[this].ID;            
+            AllRxPower = AllChannelModel.ToDictionary(x => x.Key, x => x.Value.RxPower(carrier));
             var rx = AllRxPower.ToDictionary(x => x.Key, x => Tools.FromDB(x.Value)); // dBm to mW         
             var s = rx[TheBS];
             //Console.WriteLine($"S={s}");
-            var i = 0.0;
-            var rxi = rx.Where(x => x.Key.ChannelID == TheBS.ChannelID);
-            if (rxi.Any()) { i = rx.Values.Sum() - s; }
+            var i = rx.Values.Sum() - s; 
             //Console.WriteLine($"i={i}");
             var n = Tools.FromDB(Config.Noise);
             //Console.WriteLine($"n={n}");

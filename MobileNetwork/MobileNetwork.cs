@@ -8,7 +8,6 @@ public class MobileNetworkConfig
     public double BorderY { get; set; }
     public int BaseStationNum { get; set; }
     public int UserEquipmentNum { get; set; }
-    public int ChannelNum { get; set; }
 }
 
 public class MobileNetwork
@@ -16,6 +15,7 @@ public class MobileNetwork
     public MobileNetworkConfig Config { get; set; }
     public List<BaseStation> AllBS { get; set; }
     public List<UserEquipment> AllUE { get; set; }
+    public double SumDataRate => AllUE.Sum(x => x.DataRate);
     public MobileNetwork(int nBS, int nUE)
     {
         Config = Default.MobileNetworkConfig("Default", nBS, nUE);
@@ -70,7 +70,8 @@ public class MobileNetwork
         {
             Config = Config,
             AllBSStatus = AllBS.Select(x => x.Status()).ToList(),
-            AllUEStatus = AllUE.Select(x => x.Status()).ToList()
+            AllUEStatus = AllUE.Select(x => x.Status()).ToList(),
+            SumDataRate = SumDataRate
         };
     }
     public List<BaseStationStatus> AllBaseStationStatus()
@@ -96,29 +97,25 @@ public class MobileNetwork
     }
 
     // todo: more details of false
-
-    public void SetBaseStationTxPowers(Dictionary<int, double> txPowers)
+    public void SetTxPower(Dictionary<int, double> ueTxPowers)
     {
-        foreach (var tx in txPowers) SetBaseStationTxPower(tx.Key, tx.Value);        
+        foreach (var i in ueTxPowers) { SetTxPower(i.Key, i.Value); }
+    }
+    public void SetTxPower(int ueID, double txPower)
+    {
+        if (ueID < 0 || ueID >= AllUE.Count) return;
+        AllUE[ueID].TheBS.SetTxPower(AllUE[ueID], txPower);
     }
 
-    public void SetBaseStationTxPower(int bsID, double txPower)
+    public void SetSubcarrier(Dictionary<int, int> ueSubcarrier)
     {
-        if (bsID < 0 || bsID >= AllBS.Count) return ;
-        if (txPower < 0 || txPower > AllBS[bsID].Config.MaxTxPower) return ;
-        AllBS[bsID].SetTxPower(txPower);
+        foreach (var i in ueSubcarrier) { SetSubcarrier(i.Key, i.Value); }
     }
 
-    public void SetBaseStationChannelIDs(Dictionary<int, int> channelIDs)
+    public void SetSubcarrier(int ueID, int carrier)
     {
-        foreach (var i in channelIDs) { SetBaseStationChannelID(i.Key, i.Value); }
-    }
-
-    public void SetBaseStationChannelID(int bsID, int channelID)
-    {
-        if (bsID < 0 || bsID >= AllBS.Count) return;
-        if (channelID < 0 || channelID >= Config.ChannelNum) return;
-        AllBS[bsID].SetChannelID(channelID);
+        if (ueID < 0 || ueID >= AllUE.Count) return;
+        AllUE[ueID].TheBS.SetSubcarrier(AllUE[ueID], carrier);
     }
 
     public void SetUserConnects(Dictionary<int, int> connections)
@@ -140,4 +137,5 @@ public class MobileNetworkStatus
     public MobileNetworkConfig? Config { get; set; }
     public List<BaseStationStatus>? AllBSStatus { get; set; }
     public List<UserEquipmentStatus>? AllUEStatus { get; set; }
+    public double SumDataRate { get; set; }
 }

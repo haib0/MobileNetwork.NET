@@ -37,28 +37,28 @@ namespace MobileNetwork.NET.Controllers
         }
 
         // todo: more details of false
-        [HttpPut("SetBaseStationTxPower")]
-        public void SetBaseStationTxPowers(Dictionary<int, double> txPowers)
+        [HttpPut("SetTxPower")]
+        public void SetTxPower(Dictionary<int, double> txPowers)
         {
-            mobileNetwork.SetBaseStationTxPowers(txPowers);
+            mobileNetwork.SetTxPower(txPowers);
         }
 
-        [HttpPut("SetBaseStationTxPower/{bsID}")]
-        public void SetBaseStationTxPower(int bsID, double txPower)
+        [HttpPut("SetTxPower/{ueID}")]
+        public void SetTxPower(int ueID, double txPower)
         {
-            mobileNetwork.SetBaseStationTxPower(bsID, txPower);
+            mobileNetwork.SetTxPower(ueID, txPower);
         }
 
-        [HttpPut("SetBaseStationChannelIDs")]
-        public void SetBaseStationChannelIDs(Dictionary<int, int>channelIDs)
+        [HttpPut("SetSubcarrier")]
+        public void SetSubcarrier(Dictionary<int, int>channelIDs)
         {
-            mobileNetwork.SetBaseStationChannelIDs(channelIDs);
+            mobileNetwork.SetSubcarrier(channelIDs);
         }
 
-        [HttpPut("SetBaseStationChannelID/{channelID}")]
-        public void SetBaseStationChannelID(int bsID, int channelID)
+        [HttpPut("SetSubcarrier/{channelID}")]
+        public void SetSubcarrier(int ueID, int channelID)
         {
-            mobileNetwork.SetBaseStationChannelID(bsID, channelID);
+            mobileNetwork.SetSubcarrier(ueID, channelID);
         }
 
         [HttpPut("SetUserConnects")]

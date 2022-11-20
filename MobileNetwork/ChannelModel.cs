@@ -16,6 +16,7 @@ namespace MobileNetwork.NET.MobileNetwork
         /// <param name="bs"></param>
         /// <returns>loss, in dB</returns>
         public double ChannelLoss();
+        public double RxPower(int carrier);
     }
 
     public class JakesChannelModel : IChannelModel
@@ -44,7 +45,7 @@ namespace MobileNetwork.NET.MobileNetwork
         }
         public double RateWithoutInterference()
         {
-            return BS.Bandwidth * Math.Log2(1 + SNR());
+            return BS.Config.SubcarrierBandwidth * Math.Log2(1 + SNR());
         }
         public double ChannelLoss()
         {
@@ -69,7 +70,7 @@ namespace MobileNetwork.NET.MobileNetwork
 
         public double SmallScaleLoss()
         {
-            var fd = Tools.DoplerFrequency(UE.Config.Position.Velocity, BS.Frequency);
+            var fd = Tools.DoplerFrequency(UE.Config.Position.Velocity, BS.Config.Frequency);
             //Console.WriteLine($"fd={fd}");
             var correlation = SpecialFunctions.BesselJ(0, 2 * Math.PI * fd * UE.Config.Position.UpdateInterval);
             //Console.WriteLine($"correlation={correlation}");
@@ -77,6 +78,12 @@ namespace MobileNetwork.NET.MobileNetwork
             //Console.WriteLine($"delta={delta}");
             _smallScaleLoss = correlation * _smallScaleLoss + Math.Sqrt(1 - Math.Pow(correlation, 2)) * delta;
             return _smallScaleLoss;
+        }
+
+        public double RxPower(int carrier)
+        {
+            if (!BS.AllSubcarrier.ContainsKey(carrier)) return 0.0;
+            return BS.AllSubcarrier[carrier].TxPower - ChannelLoss();
         }
     }
 }
