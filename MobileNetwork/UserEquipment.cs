@@ -3,7 +3,7 @@ using System.Timers;
 
 namespace MobileNetwork.NET.MobileNetwork
 {
-    
+
     public class UserEquipmentConfig
     {
         public int ID { get; set; }
@@ -25,13 +25,14 @@ namespace MobileNetwork.NET.MobileNetwork
         public BaseStation TheBS { get; set; } // the BS that connected.
         public double TheDistance => AllDistance[TheBS];  // distance from TheBS
         public IChannelModel TheChannelModel => AllChannelModel[TheBS];
-        
+        public int TheCarrierID => TheBS.ConnectedUserEquipment[this].ID;
+
         public UserEquipment(UserEquipmentConfig config, List<BaseStation> baseStations)
         {
             Config = config;
             AllBaseStation = baseStations;
             SetALLChannelModel();
-            UpdateAllDistance();
+            Update();
         }
 
         private void SetALLChannelModel()
@@ -99,19 +100,19 @@ namespace MobileNetwork.NET.MobileNetwork
         public double SpectralEfficiency => Math.Log2(1 + SINR); // bit/s/Hz
         public double DataRate => TheBS.Config.SubcarrierBandwidth * SpectralEfficiency; // bit/s
         private void UpdateCSI()
-        {   if (!TheBS.ConnectedUserEquipment.ContainsKey(this))
+        {
+            if (!TheBS.ConnectedUserEquipment.ContainsKey(this))
             {
                 AllRxPower = new Dictionary<BaseStation, double>();
                 SINR = 0;
                 return;
             }
 
-            var carrier = TheBS.ConnectedUserEquipment[this].ID;            
-            AllRxPower = AllChannelModel.ToDictionary(x => x.Key, x => x.Value.RxPower(carrier));
+            AllRxPower = AllChannelModel.ToDictionary(x => x.Key, x => x.Value.RxPower(TheCarrierID));
             var rx = AllRxPower.ToDictionary(x => x.Key, x => Tools.FromDB(x.Value)); // dBm to mW         
             var s = rx[TheBS];
             //Console.WriteLine($"S={s}");
-            var i = rx.Values.Sum() - s; 
+            var i = rx.Values.Sum() - s;
             //Console.WriteLine($"i={i}");
             var n = Tools.FromDB(Config.Noise);
             //Console.WriteLine($"n={n}");
@@ -127,7 +128,14 @@ namespace MobileNetwork.NET.MobileNetwork
                 Config = Config,
                 AllDistance = AllDistance.ToDictionary(x => x.Key.Config.ID, x => x.Value),
                 AllRxPower = AllRxPower.ToDictionary(x => x.Key.Config.ID, x => x.Value),
-                TheBS = TheBS.Config.ID,
+                TheBSID = TheBS.Config.ID,
+                TheCarrierID = TheCarrierID,
+                TheBSPositionX = TheBS.Config.PositionX,
+                TheBSPositionY = TheBS.Config.PositionY,
+                TheBSPositionZ = TheBS.Config.Height,
+                TheTxFreq = TheBS.Config.Frequency,
+                TheTxBand = TheBS.Config.SubcarrierBandwidth,
+                TheTxPower = TheBS.ConnectedUserEquipment[this].TxPower,
                 TheDistance = TheDistance,
                 TheRxPower = AllRxPower[TheBS],
                 SINR = SINR,
@@ -140,10 +148,17 @@ namespace MobileNetwork.NET.MobileNetwork
     public class UserEquipmentStatus
     {
         public DateTime Time => DateTime.Now;
-        public UserEquipmentConfig? Config { get; set; }
-        public Dictionary<int, double>? AllDistance { get; set; }
-        public Dictionary<int, double>? AllRxPower { get; set; } // in dBm
-        public int TheBS { get; set; } // the BS that connected.
+        public UserEquipmentConfig Config { get; set; }
+        public Dictionary<int, double> AllDistance { get; set; }
+        public Dictionary<int, double> AllRxPower { get; set; } // in dBm
+        public int TheBSID { get; set; } // the BS that connected.
+        public int TheCarrierID { get; set; }
+        public double TheBSPositionX { get; set; }
+        public double TheBSPositionY { get; set; }
+        public double TheBSPositionZ { get; set; }
+        public double TheTxFreq { get; set; }
+        public double TheTxBand { get; set; }
+        public double TheTxPower { get; set; }
         public double TheDistance { get; set; }  // distance from TheBS
         public double TheRxPower { get; set; }
         public double SINR { get; set; }

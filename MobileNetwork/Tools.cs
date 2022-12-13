@@ -40,6 +40,7 @@
 
         public static double ToDB(double x)
         {
+            if (x == 0) return double.MinValue; // not using -inf for json serialzation
             return 10 * Math.Log10(x);
         }
     }

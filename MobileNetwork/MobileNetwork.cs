@@ -15,6 +15,7 @@ public class MobileNetwork
     public MobileNetworkConfig Config { get; set; }
     public List<BaseStation> AllBS { get; set; }
     public List<UserEquipment> AllUE { get; set; }
+    public double AverageSpectralEfficiency => AllUE.Sum(x => x.SpectralEfficiency) / AllUE.Count;
     public double SumDataRate => AllUE.Sum(x => x.DataRate);
     public MobileNetwork(int nBS, int nUE)
     {
@@ -125,8 +126,8 @@ public class MobileNetwork
 
     public void SetUserConnect(int ueID, int bsID)
     {
-        if (ueID < 0 || ueID >= AllUE.Count) return ;
-        if (bsID < 0 || bsID >= AllBS.Count) return ;
+        if (ueID < 0 || ueID >= AllUE.Count) return;
+        if (bsID < 0 || bsID >= AllBS.Count) return;
         AllUE[ueID].ConnectTo(AllBS[bsID]);
     }
 }

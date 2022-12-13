@@ -7,7 +7,7 @@ namespace MobileNetwork.NET.Controllers
     [ApiController]
     public class MobileNetworkController : ControllerBase
     {
-        private static readonly MobileNetwork.MobileNetwork mobileNetwork = new(10, 30);
+        static readonly MobileNetwork.MobileNetwork mobileNetwork = TheMobileNetwork.mobileNetwork;
 
         [HttpGet("AllStatus")]
         public MobileNetworkStatus AllStatus() => mobileNetwork.AllStatus();
@@ -50,7 +50,7 @@ namespace MobileNetwork.NET.Controllers
         }
 
         [HttpPut("SetSubcarrier")]
-        public void SetSubcarrier(Dictionary<int, int>channelIDs)
+        public void SetSubcarrier(Dictionary<int, int> channelIDs)
         {
             mobileNetwork.SetSubcarrier(channelIDs);
         }
@@ -70,7 +70,7 @@ namespace MobileNetwork.NET.Controllers
         [HttpPut("SetUserConnect")]
         public void SetUserConnect(int ueID, int bsID)
         {
-            mobileNetwork.SetUserConnect(ueID, bsID);            
+            mobileNetwork.SetUserConnect(ueID, bsID);
         }
     }
 }

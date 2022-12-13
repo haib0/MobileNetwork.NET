@@ -28,7 +28,7 @@ namespace MobileNetwork.NET.MobileNetwork
                 Frequency = 3.5e9,
                 SubcarrierNum = 16,
                 SubcarrierBandwidth = 1e8,
-                SubcarrierMaxTxPower = 30,                
+                SubcarrierMaxTxPower = 30,
                 Height = 10,
                 PositionX = posX,
                 PositionY = posY
@@ -37,7 +37,7 @@ namespace MobileNetwork.NET.MobileNetwork
 
         public static UserEquipmentConfig UserEquipmentConfig(int id, string name, double posX, double posY)
         {
-            var updateInterval = 0.02;
+            var updateInterval = 60;
             var velocity = 1.5;
             return new UserEquipmentConfig
             {

@@ -41,7 +41,7 @@ namespace MobileNetwork.NET.MobileNetwork
         }
         public double SNR()
         {
-            return Tools.FromDB(BS.TxPower - ChannelLoss() - UE.Config.Noise);
+            return Tools.FromDB(BS.TxPowerSum - ChannelLoss() - UE.Config.Noise);
         }
         public double RateWithoutInterference()
         {
@@ -82,7 +82,7 @@ namespace MobileNetwork.NET.MobileNetwork
 
         public double RxPower(int carrier)
         {
-            if (!BS.AllSubcarrier.ContainsKey(carrier)) return 0.0;
+            if (!BS.AllSubcarrier.ContainsKey(carrier)) return double.MinValue;
             return BS.AllSubcarrier[carrier].TxPower - ChannelLoss();
         }
     }

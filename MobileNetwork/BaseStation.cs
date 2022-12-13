@@ -18,10 +18,10 @@ namespace MobileNetwork.NET.MobileNetwork
 
     public class BaseStation
     {
-        public BaseStationConfig Config { get; set; }        
+        public BaseStationConfig Config { get; set; }
         public Dictionary<int, Subcarrier> AllSubcarrier { get; set; } // index is subcarrier's id while value is itself
         public Dictionary<UserEquipment, Subcarrier> ConnectedUserEquipment => AllSubcarrier.ToDictionary(x => x.Value.UserEquipment, x => x.Value);
-        public double TxPower => AllSubcarrier.Values.Sum(x => x.TxPower); // transmitter output power in dBm
+        public double TxPowerSum => Tools.ToDB(AllSubcarrier.Values.Sum(x => Tools.FromDB(x.TxPower))); // transmitter output power in dBm
         public BaseStation(BaseStationConfig config)
         {
             Config = config;
@@ -30,19 +30,19 @@ namespace MobileNetwork.NET.MobileNetwork
 
         public void SetTxPower(int carrier, double txPower)
         {
-            if (txPower < 0 || txPower > Config.SubcarrierMaxTxPower) return;
+            if (txPower > Config.SubcarrierMaxTxPower) return;
             if (!AllSubcarrier.ContainsKey(carrier)) return;
             AllSubcarrier[carrier].TxPower = txPower;
         }
 
-        public void SetTxPower(UserEquipment ue,double txPower)
+        public void SetTxPower(UserEquipment ue, double txPower)
         {
-            if (txPower < 0 || txPower > Config.SubcarrierMaxTxPower) return;
+            if (txPower > Config.SubcarrierMaxTxPower) return;
             if (!ConnectedUserEquipment.ContainsKey(ue)) return;
             ConnectedUserEquipment[ue].TxPower = txPower;
         }
 
-        public void SetSubcarrier(UserEquipment ue,int carrier)
+        public void SetSubcarrier(UserEquipment ue, int carrier)
         {
             if (carrier < 0 || carrier >= Config.SubcarrierNum) return;
             if (!ConnectedUserEquipment.ContainsKey(ue)) return; // not serving ue
@@ -54,7 +54,7 @@ namespace MobileNetwork.NET.MobileNetwork
             if (carrier < 0 || carrier >= Config.SubcarrierNum) return;
             if (AllSubcarrier.ContainsKey(carrier)) return; // wont disconnect the user already connected
             if (!ConnectedUserEquipment.ContainsKey(ue)) return; // not serving ue
-            AllSubcarrier[carrier] = new Subcarrier { ID = carrier, TxPower = Config.SubcarrierMaxTxPower, UserEquipment = ue }; 
+            AllSubcarrier[carrier] = new Subcarrier { ID = carrier, TxPower = Config.SubcarrierMaxTxPower, UserEquipment = ue };
         }
 
         public void SetSubcarrierAuto(UserEquipment ue)
@@ -91,8 +91,8 @@ namespace MobileNetwork.NET.MobileNetwork
             return new BaseStationStatus
             {
                 Config = Config,
-                TxPower = TxPower,
-                ConnectedUserEquipment = ConnectedUserEquipment.ToDictionary(x=>x.Key.Config.ID, x=> x.Value.ID),
+                TxPowerSum = TxPowerSum,
+                ConnectedUserEquipment = ConnectedUserEquipment.ToDictionary(x => x.Key.Config.ID, x => x.Value.ID),
                 AllSubcarrier = AllSubcarrier.ToDictionary(x => x.Key, x => x.Value.Status())
             };
         }
@@ -102,7 +102,7 @@ namespace MobileNetwork.NET.MobileNetwork
     {
         public DateTime Time => DateTime.Now;
         public BaseStationConfig? Config { get; set; }
-        public double TxPower { get; set; } // transmitter output power in dBm
+        public double TxPowerSum { get; set; } // transmitter output power in dBm
         public Dictionary<int, int> ConnectedUserEquipment { get; set; }
         public Dictionary<int, SubcarrierStatus> AllSubcarrier { get; set; }
     }
